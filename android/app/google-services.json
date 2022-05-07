@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "601866920862",
+    "firebase_url": "https://shop-app-scratch-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "shop-app-scratch",
+    "storage_bucket": "shop-app-scratch.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:601866920862:android:f54369718f96dc5821ec8f",
+        "android_client_info": {
+          "package_name": "com.example.instagram_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "601866920862-7ahc4ak6shnvke0b8ktc2p662c4q7t5s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDepPqfu7fHIJa04e73ha-7MyYx8UmjVaQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "601866920862-7ahc4ak6shnvke0b8ktc2p662c4q7t5s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
