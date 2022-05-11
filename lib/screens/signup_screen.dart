@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_flutter/resources/auth_methods.dart';
+import 'package:instagram_flutter/responsive/mobile_screen_layout.dart';
+import 'package:instagram_flutter/responsive/responsive_layout_scrren.dart';
+import 'package:instagram_flutter/responsive/web_screen_layout.dart';
+import 'package:instagram_flutter/screens/login_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/widgets/text_field_input.dart';
@@ -23,6 +27,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   Uint8List? _image;
+  bool _isLoading = false;
   @override
   void dispose() {
     super.dispose();
@@ -39,6 +44,37 @@ class _SignupScreenState extends State<SignupScreen> {
     });
   }
 
+  void signUpUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().signUpUser(
+      email: _emailController.text,
+      password: _passwordController.text,
+      username: _usernameController.text,
+      bio: _bioController.text,
+      file: _image!,
+    );
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (res != "Success") {
+      showSnackBar(res, context);
+    } else {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => ResponsiveLayout(
+            webScreenLayout: WebScreenLayout(),
+            mobileScreenLayout: MobileScreenLayout()),
+      ));
+    }
+  }
+
+  void navigateToLogin() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => LoginScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +89,7 @@ class _SignupScreenState extends State<SignupScreen> {
             children: [
               Flexible(
                 child: Container(),
-                flex: 2,
+                flex: 1,
               ),
               SvgPicture.asset(
                 'assets/ic_instagram.svg',
@@ -61,7 +97,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 height: 64,
               ),
               SizedBox(
-                height: 64,
+                height: 12,
               ),
               Stack(
                 children: [
@@ -85,7 +121,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ],
               ),
               SizedBox(
-                height: 24,
+                height: 12,
               ),
               TextFieldInput(
                 textEditingController: _usernameController,
@@ -93,7 +129,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 textInputType: TextInputType.text,
               ),
               SizedBox(
-                height: 24,
+                height: 12,
               ),
               TextFieldInput(
                 textEditingController: _emailController,
@@ -101,7 +137,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 textInputType: TextInputType.emailAddress,
               ),
               SizedBox(
-                height: 24,
+                height: 12,
               ),
               TextFieldInput(
                 isPass: true,
@@ -110,7 +146,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 textInputType: TextInputType.text,
               ),
               SizedBox(
-                height: 24,
+                height: 12,
               ),
               TextFieldInput(
                 textEditingController: _bioController,
@@ -118,23 +154,18 @@ class _SignupScreenState extends State<SignupScreen> {
                 textInputType: TextInputType.text,
               ),
               SizedBox(
-                height: 24,
+                height: 12,
               ),
               InkWell(
-                onTap: () async {
-                  String res = await AuthMethods().signUpUser(
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                    username: _usernameController.text,
-                    bio: _bioController.text,
-                    file: _image!,
-                  );
-                  print(res);
-                },
+                onTap: signUpUser,
                 child: Container(
-                  child: Text(
-                    "Sign up",
-                  ),
+                  child: _isLoading
+                      ? CircularProgressIndicator(
+                          color: primaryColor,
+                        )
+                      : Text(
+                          "Sign up",
+                        ),
                   alignment: Alignment.center,
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 12),
@@ -153,7 +184,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               Flexible(
                 child: Container(),
-                flex: 2,
+                flex: 1,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -165,10 +196,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: navigateToLogin,
                     child: Container(
                       child: Text(
-                        "Sign Up.",
+                        "Login",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
