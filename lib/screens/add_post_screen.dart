@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_flutter/providers/user_provider.dart';
+import 'package:instagram_flutter/resources/firestore_method.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/models/user.dart';
@@ -19,6 +20,27 @@ class AddPostScreen extends StatefulWidget {
 
 class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _file;
+  final TextEditingController _descriptionController = TextEditingController();
+  bool _isLoading = false;
+  void postImage(String uid, String username, String profileImage) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      String res = await FirestoreMethod().uploadPost(
+          _descriptionController.text, _file!, uid, username, profileImage);
+      if (res == "success") {
+        setState(() {
+          _isLoading = false;
+        });
+        showSnackBar("Posted", context);
+      } else {
+        showSnackBar(res, context);
+      }
+    } catch (e) {
+      showSnackBar(e.toString(), context);
+    }
+  }
 
   _selectedImage(BuildContext context) async {
     return showDialog(
@@ -53,10 +75,23 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     _file = file;
                   });
                 },
-              )
+              ),
+              SimpleDialogOption(
+                padding: EdgeInsets.all(20),
+                child: Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
             ],
           );
         });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _descriptionController.dispose();
   }
 
   @override
@@ -81,7 +116,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
               title: Text("Post to"),
               actions: [
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () => postImage(
+                          user.uid,
+                          user.username,
+                          user.photoUrl,
+                        ),
                     child: Text(
                       "Post",
                       style: TextStyle(
@@ -94,6 +133,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
             ),
             body: Column(
               children: [
+                _isLoading
+                    ? LinearProgressIndicator()
+                    : Padding(
+                        padding: EdgeInsets.only(top: 0),
+                      ),
+                Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,6 +149,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.45,
                       child: TextField(
+                        controller: _descriptionController,
                         decoration: InputDecoration(
                           hintText: "Create a Post",
                           border: InputBorder.none,
@@ -119,9 +165,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         child: Container(
                             decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: NetworkImage(
-                              "https://images.unsplash.com/photo-1652368760346-a4e16ca581bf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=388&q=80",
-                            ),
+                            image: MemoryImage(_file!),
                             fit: BoxFit.fill,
                             alignment: FractionalOffset.topCenter,
                           ),
