@@ -1,13 +1,20 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:instagram_flutter/models/user.dart';
+import 'package:instagram_flutter/providers/user_provider.dart';
 import 'package:instagram_flutter/utils/colors.dart';
+import 'package:instagram_flutter/widgets/like_animation.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class PostCard extends StatelessWidget {
-  const PostCard({Key? key}) : super(key: key);
+  final snap;
+  const PostCard({Key? key, required this.snap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final User user = Provider.of<UserProvider>(context).getUser;
     return Container(
       color: mobileBackgroundColor,
       padding: EdgeInsets.symmetric(
@@ -24,8 +31,7 @@ class PostCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundImage: NetworkImage(
-                      "https://images.unsplash.com/photo-1652711420609-1d1438b70c17?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=326&q=80"),
+                  backgroundImage: NetworkImage(snap["profileImage"]),
                 ),
                 Expanded(
                   child: Padding(
@@ -38,7 +44,7 @@ class PostCard extends StatelessWidget {
                       // ignore: prefer_const_literals_to_create_immutables
                       children: [
                         Text(
-                          "username",
+                          snap["username"],
                           style: TextStyle(fontWeight: FontWeight.bold),
                         )
                       ],
@@ -87,18 +93,22 @@ class PostCard extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.35,
             width: double.infinity,
             child: Image.network(
-              "https://images.unsplash.com/photo-1652711420609-1d1438b70c17?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=326&q=80",
+              snap["postUrl"],
               fit: BoxFit.cover,
             ),
           ),
           //like comment section
           Row(
             children: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.favorite,
-                  color: Colors.red,
+              LikeAnimation(
+                isAnimating: snap['likes'].contains(user.uid),
+                smallLike: true,
+                child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.favorite,
+                    color: Colors.red,
+                  ),
                 ),
               ),
               IconButton(
@@ -138,7 +148,7 @@ class PostCard extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                       ),
                   child: Text(
-                    "1,231 likes",
+                    "${snap["likes"].length} likes",
                     style: Theme.of(context).textTheme.bodyText2,
                   ),
                 ),
@@ -151,12 +161,12 @@ class PostCard extends StatelessWidget {
                       // ignore: prefer_const_literals_to_create_immutables
                       children: [
                         TextSpan(
-                          text: "username",
+                          text: snap["username"],
                           style: TextStyle(
                               fontWeight: FontWeight.bold, color: Colors.red),
                         ),
                         TextSpan(
-                          text: " Hey this is come description to be releaced",
+                          text: " ${snap["description"]}",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -178,7 +188,9 @@ class PostCard extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 4),
                   child: Text(
-                    "22/12/2021",
+                    DateFormat.yMMMd().format(
+                      snap['datePublished'].toDate(),
+                    ),
                     style: TextStyle(fontSize: 16, color: secondaryColor),
                   ),
                 ),
