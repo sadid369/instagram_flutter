@@ -31,7 +31,7 @@ class _LikeAnimationState extends State<LikeAnimation>
     controller = AnimationController(
       vsync: this,
       duration: Duration(
-        milliseconds: widget.duration.inMicroseconds ~/ 2,
+        milliseconds: widget.duration.inMilliseconds ~/ 2,
       ),
     );
     scale = Tween<double>(begin: 1, end: 1.2).animate(controller);
