@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagram_flutter/models/post.dart';
 import 'package:instagram_flutter/resources/storage_methods.dart';
+import 'package:instagram_flutter/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 
 class FirestoreMethod {
@@ -77,6 +78,15 @@ class FirestoreMethod {
       } else {
         print("Text is Empty");
       }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  //deleting the post
+  Future<void> deletePost(String postId) async {
+    try {
+      await _firestore.collection("posts").doc(postId).delete();
     } catch (e) {
       print(e.toString());
     }
